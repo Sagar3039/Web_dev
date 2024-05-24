@@ -8,59 +8,97 @@
 </head>
 <body class="bg-gray-300">
     
-    <form action="">
-        <h1>Guess the number</h1>
-        <h2>Enter a number between 1 - 100</h2>
-        <input type="text" id="number">
-        <button id="submit"  class="bg-blue-400 hover:bg-blue-700">Enter</button>
+    <h1 class="text-center font-bold text-xl">Guess the number</h1>
+    <h2 class="text-center font-bold text-xl">Enter a number between 1 - 100</h2>
+    <form action="" class="flex justify-center items-center">
+        <div class="container bg-yellow-300 h-72 w-60 mt-20 rounded-xl border-solid border-2 border-black">
+            <input type="text" placeholder="Guess the number" id="number" class="h-10 w-full font-extrabold text-2xl rounded-xl border-dotted border-2 border-black">
+            <div class="remain text-2xl font-bold text-wrap "></div>
+            <button id="submit" class="bg-blue-400 hover:bg-blue-700 h-10 w-16 rounded-xl text-xl ml-9 mt-10">Enter</button>
+            <button id="reset" class="bg-red-400 hover:bg-red-700 h-10 w-16 rounded-xl text-xl ml-9">Reset</button>
+            <div class="guess text-xl font-bold"></div>
+            <div id="count" class="text-xl font-bold"></div>
+            <div class="answer text-xl font-bold"></div>
+        </div>
     </form>
-    <div class="guess"></div>
-    <div id="count"></div>
-    <div class="answer"></div>
+    
 
 </body>
 <script>
-    const random = parseInt(Math.random()*100+1);
-    //  console.log(random);
+    let random = generateRandomNumber();
     let previousGuess = [];
-    let count=1;
+    let count = 1;
     const numberInput = document.querySelector('#number');
     const submit = document.querySelector('#submit');
+    const reset = document.querySelector('#reset');
     const answer = document.querySelector('.answer');
     const probably = document.querySelector('.guess');
-    const remain = document.querySelector('#count');
+    const remain = document.querySelector('.remain');
 
-        submit.addEventListener('click', function(e){
+    submit.addEventListener('click', function(e){
         e.preventDefault();
         const guess = parseInt(numberInput.value);
-        if(guess > 100){
+        handleGuess(guess);
+    });
+
+    reset.addEventListener('click', function(e) {
+        e.preventDefault();
+        resetGame();
+    });
+
+    function handleGuess(guess) {
+        if (guess > 100) {
             alert('Please enter a number smaller than 100');
-        } else if(guess < 1){
+        } else if (guess < 1) {
             alert('Please enter a number greater than 1');
-        } else if(isNaN(guess)){
+        } else if (isNaN(guess)) {
             alert('Please enter a valid number');
-        } 
-        else if(guess>random){
+        } else if (guess > random) {
             probably.innerHTML = "Guess lower";
+            remain.innerHTML= 10-count;
             previousGuess.push(guess);
             answer.innerHTML = "Previous guesses: " + previousGuess.join(", ");
             count++;
-       
-        }
-        else if(guess<random){
+            numberInput.value = '';
+            if (count > 10) {
+                endGame();
+            }
+        } else if (guess < random) {
             probably.innerHTML = "Guess higher";
+            remain.innerHTML= 10-count;
             previousGuess.push(guess);
             answer.innerHTML = "Previous guesses: " + previousGuess.join(", ");
-            count++;  
-        }
-        else if(guess===random){
-            probably.innerHTML = `Hurrey you beat the game. The number is ${random}`;
+            count++;
+            numberInput.value = '';
+            if (count > 10) {
+                endGame();
+            }
+        } else if (guess === random) {
+            probably.innerHTML = `Hurray! You beat the game. The number is ${random}`;
             previousGuess.push(guess);
+            numberInput.value = '';
             answer.innerHTML = "Previous guesses: " + previousGuess.join(", ");
-       
         }
-        
-    });
-    
+    }
+
+    function endGame() {
+        probably.innerHTML = "Game over. You've used all your guesses!";
+        submit.disabled = true; // Disable the submit button
+        remain.innerHTML='';
+    }
+
+    function resetGame() {
+        random = generateRandomNumber();
+        previousGuess = [];
+        count = 1;
+        numberInput.value = '';
+        probably.innerHTML = '';
+        answer.innerHTML = '';
+        submit.disabled = false;
+    }
+
+    function generateRandomNumber() {
+        return parseInt(Math.random() * 100 + 1);
+    }
 </script>
 </html>
